@@ -3,6 +3,7 @@
 
 directory="$HOME/Pictures/RedditScrapes" # Directory to download all your images to
 desiredpixelcount=5000000 # Pixel count used to determine image quality. 5000000 is 5MP.
+current_directory=$(pwd)
 cd $directory
 
 # Scrape reddit from .txt file with list of subreddits
@@ -52,3 +53,4 @@ for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
         rm $file
     fi
 done
+cd $current_directory
