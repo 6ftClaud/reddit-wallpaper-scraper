@@ -1,7 +1,9 @@
 #!/bin/bash
 # Requires sed, idenfify(imagemagick), jq, curl
 
-cd $HOME/Pictures/RedditScrapes/
+directory="$HOME/Pictures/RedditScrapes" # Directory to download all your images to
+desiredpixelcount=5000000 # Pixel count used to determine image quality. 5000000 is 5MP.
+cd $directory
 
 # Scrape reddit from .txt file with list of subreddits
 subreddit_file="subreddits.txt"
@@ -45,7 +47,6 @@ for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
         pixelcount=$(echo "$kilopixelcount*1000" | bc | cut -d. -f1)
     fi
     # Desired pixel amount
-    desiredpixelcount=5000000
     if [[ $pixelcount -lt $desiredpixelcount ]];then
         echo "$file pixel count is less than $desiredpixelcount : $pixelcount"
         rm $file
