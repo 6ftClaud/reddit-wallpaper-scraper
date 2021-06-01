@@ -31,9 +31,9 @@ fdupes -Ndqr . &> /dev/null
 for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
     filetype=$(file -b $file)
 
-    # Remove HTML files
-    if [[ $filetype == *"HTML"* ]];then
-        echo "$file is an HTML document, removing"
+    # Remove HTML and GIF files
+    if [[ $filetype == *"HTML"* ]] || [[ $file == *".gif"* ]];then
+        echo "$file is an unwanted type of file, removing"
         rm $file
         continue
     fi
