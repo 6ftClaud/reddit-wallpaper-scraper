@@ -1,11 +1,8 @@
-wallpapers
-wallpaper
-multiwall
 BeachPorn
-BotanicalPorn
 CityPorn
+DigitalArt
 EarthPorn
-LakePorn
-SkyPorn
 SpacePorn
-WaterPorn
+multiwall
+wallpaper
+wallpapers
