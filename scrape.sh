@@ -1,8 +1,8 @@
 #!/bin/bash
-# Requires sed, idenfify(imagemagick), jq, curl
+# Requires sed, idenfify(imagemagick), jq, curl, fdupes, bc
 
-directory="$HOME/Pictures/RedditScrapes" # Directory to download all your images to
-desiredpixelcount=5000000 # Pixel count used to determine image quality. 5000000 is 5MP.
+directory="$HOME/Pictures/Backgrounds" # Directory to download all your images to
+desiredpixelcount=4000000 # Pixel count used to determine image quality. 5000000 is 5MP.
 current_directory=$(pwd)
 cd $directory
 
@@ -26,6 +26,7 @@ done
 # Remove duplicates
 echo -e "\nRemoving duplicate files\n"
 fdupes -Ndqr . &> /dev/null
+for file in $(find . -type f -name "*.1");do mv $file ${file/.1};done
 
 # Remove garbage
 for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
@@ -34,23 +35,30 @@ for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
     # Remove HTML and GIF files
     if [[ $filetype == *"HTML"* ]] || [[ $file == *".gif"* ]];then
         echo "$file is an unwanted type of file, removing"
-        rm $file
-        continue
+        rm $file;continue
     fi
 
-    # Remove pictures with less than desired pixel count
-    pixelcount=$(identify -verbose $file | grep "Number pixels" | awk '{print $3}')
-    if [[ $pixelcount == *"M"* ]];then
-        megapixelcount=${pixelcount/M/}
-        pixelcount=$(echo "$megapixelcount*1000000" | bc | cut -d. -f1)
-    elif [[ $pixelcount ==  *"K"* ]];then
-        kilopixelcount=${pixelcount/K/}
-        pixelcount=$(echo "$kilopixelcount*1000" | bc | cut -d. -f1)
+    # Remove pictures with less than desired pixel count or aspect ratio
+    identify $file | awk '{print $3}' | ( while read pixels;do
+        w=$(echo $pixels | awk -F 'x' '{print $1}')
+        h=$(echo $pixels | awk -F 'x' '{print $2}')
+    done
+
+    pixelcount=$((w * h))
+    aspect_ratio=$(echo "$w/$h" | bc -l)
+    
+    # Desired aspect ratio (16:9 is ~1.7778)
+    if [[ $(echo "$aspect_ratio>1.7" | bc) -eq 1 && $(echo "$aspect_ratio<1.8" | bc) -eq 1 ]];then
+        :
+    else
+        echo "$file aspect ratio is  incorrect: $aspect_ratio"
+        rm $file;exit
     fi
     # Desired pixel amount
     if [[ $pixelcount -lt $desiredpixelcount ]];then
         echo "$file pixel count is less than $desiredpixelcount : $pixelcount"
         rm $file
     fi
+    )
 done
 cd $current_directory

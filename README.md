@@ -1,6 +1,6 @@
 ## Reddit wallpaper scraper
 ## Description
-#### What motivated me
+#### Why? 
 Have you ever spent hours upon hours looking for a nice wallpaper to use, only to end up being disappointed, because most of them is low quality garbage? Well you don't have to worry anymore, because this script will download the finest wallpapers of Reddit and store them in their respective folders.  
 #### How it works
 This script finds out the image urls from the reddit json data, downloads the images, checks for duplicates and deletes them if need be, and then finally removes low quality images so you don't end up with a bunch of unusable trash.
