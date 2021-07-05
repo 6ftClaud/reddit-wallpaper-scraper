@@ -1,5 +1,8 @@
 #!/bin/bash
-# Requires sed, idenfify(imagemagick), jq, curl, fdupes, bc
+# Requires sed, identify(imagemagick), jq, curl, fdupes, bc
+
+#DEBUG
+#set -x
 
 directory="$HOME/Pictures/Backgrounds" # Directory to download all your images to
 desired_pixel_count=4000000 # Pixel count used to determine image quality. 4 Megapixels is good for 1440p.
@@ -49,7 +52,7 @@ for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
     aspect_ratio=$(echo "$w/$h" | bc -l)
     
     # Desired aspect ratio (16:9 is ~1.7778)
-    if [[ $(echo "$aspect_ratio>($desired_aspect_ratio-0.5)" | bc) -eq 1 && $(echo "$aspect_ratio<($desired_aspect_ratio+0.5)" | bc) -eq 1 ]];then
+    if [[ $(echo "$aspect_ratio>($desired_aspect_ratio-0.05)" | bc) -eq 1 && $(echo "$aspect_ratio<($desired_aspect_ratio+0.05)" | bc) -eq 1 ]];then
         :
     else
         echo "$file aspect ratio is  incorrect: $aspect_ratio"
