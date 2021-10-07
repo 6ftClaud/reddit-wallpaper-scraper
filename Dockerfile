@@ -1,14 +1,14 @@
 FROM alpine:latest
 
 RUN apk update \
-    && apk upgrade -y \
-    && apk add sed identify jq curl fdupes bc
+    && apk upgrade \
+    && apk add sed imagemagick jq curl fdupes bc bash file
 
-WORKDIR /root
+COPY scrape.sh /root/
+COPY subreddits.txt /root/
 
-COPY scrape.sh .
-COPY subreddits.txt .
+RUN echo "while true;do bash /root/scrape.sh;sleep 6h;done" >> /root/entrypoint.sh
 
-RUN chmod +x scrape.sh
+RUN chmod +x /root/*.sh
 
-RUN echo "while true;do ./scrape.sh;sleep 6h;done"
+ENTRYPOINT /root/entrypoint.sh

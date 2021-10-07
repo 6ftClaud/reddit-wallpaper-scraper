@@ -22,7 +22,7 @@ for sub in $(cat $subreddit_file);do
             jq '.data.children | .[] | .data.url' | \
             while read -r URL; do
                 echo "Downloading $URL"
-                wget -q $(echo ${URL} | tr --delete \")
+                wget -q $(echo ${URL} | tr -d \")
             done
     cd ..
 done
