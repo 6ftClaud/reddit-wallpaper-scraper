@@ -4,7 +4,7 @@
 #DEBUG
 #set -x
 
-directory="$HOME/Pictures/Backgrounds" # Directory to download all your images to
+directory="/data" # Directory to download all your images to
 desired_pixel_count=4000000 # Pixel count used to determine image quality. 4 Megapixels is good for 1440p.
 desired_aspect_ratio=1.7778 # <- this is 16:9 aspect ratio
 current_directory=$(pwd)
