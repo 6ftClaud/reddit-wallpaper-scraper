@@ -2,13 +2,18 @@ FROM alpine:latest
 
 RUN apk update \
     && apk upgrade \
-    && apk add sed imagemagick jq curl fdupes bc bash file
+    && apk add sed imagemagick jq curl wget fdupes bc bash file
 
-COPY scrape.sh /root/
-COPY subreddits.txt /root/
+RUN adduser -D -u 1000 -s /bin/bash scraper
 
-RUN echo "while true;do bash /root/scrape.sh;sleep 6h;done" >> /root/entrypoint.sh
+COPY src/* /tmp/
 
-RUN chmod +x /root/*.sh
+RUN mkdir /data
 
-ENTRYPOINT /root/entrypoint.sh
+RUN chmod +x /tmp/*.sh \
+    && chown scraper:scraper /tmp/*.sh \
+    && chown -R scraper:scraper /data
+
+USER scraper:scraper
+WORKDIR /data
+ENTRYPOINT /tmp/scrape.sh
