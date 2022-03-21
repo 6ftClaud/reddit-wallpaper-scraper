@@ -11,7 +11,7 @@ current_directory=$(pwd)
 cd $directory
 
 # Scrape reddit from .txt file with list of subreddits
-subreddit_file="subreddits.txt"
+subreddit_file="/tmp/subreddits.txt"
 for sub in $(cat $subreddit_file);do
     if ! [ -d $sub ];then
         mkdir $sub
@@ -30,10 +30,12 @@ done
 # Remove duplicates
 echo -e "\nRemoving duplicate files\n"
 fdupes -Ndqr . &> /dev/null
-for file in $(find . -type f -name "*.1");do mv $file ${file/.1};done
+# For whatever reason \d doesn't work for regex digit match
+for file in $(find . -type f -regex '.*\.[0123456789]');do mv $file ${file/.[0123456789]};done
 
 # Remove garbage
 for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
+    chmod 0644 $file
     filetype=$(file -b $file)
 
     # Remove HTML and GIF files
@@ -65,4 +67,5 @@ for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
     fi
     )
 done
+
 cd $current_directory
