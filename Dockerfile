@@ -17,3 +17,4 @@ RUN chmod +x /tmp/*.sh \
 USER scraper:scraper
 WORKDIR /data
 ENTRYPOINT /tmp/scrape.sh
+LABEL system.prune='do_not_delete'
