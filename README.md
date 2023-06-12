@@ -4,9 +4,17 @@
 Have you ever spent hours upon hours looking for a nice wallpaper to use, only to end up being disappointed, because most of them is low quality garbage? Well you don't have to worry anymore, because this script will download the finest wallpapers of Reddit and store them in their respective folders.  
 #### How it works
 This script finds out the image urls from the reddit json data, downloads the images, checks for duplicates and deletes them if need be, and then finally removes low quality images so you don't end up with a bunch of unusable trash.
-### Dependencies
-It requires `curl jq imagemagick sed fdupes bc` packages to run
-### Settings
-Change `directory` and `desiredpixelcount` variables to your liking. Also edit `subreddits.txt` file to suit your needs
-### Watch it go
-Run `./scrape.sh` and watch the magic happen
+### Environment variables
+|Key|Definition|Possible values|
+|---|---|---|
+|DEBUG|See exactly what's happening|`true`|
+|SUBREDDITS|List of subreddits separated by comma|`wallpaper,wallpapers`|  
+|PIXEL_COUNT|Desired pixel count|Defaults to `4000000`|
+|ASPECT_RATIO|Desired aspect ratio|Defaults to `1.7778` (16:9)|
+### Run it
+```bash
+docker run --rm -it \
+    -e SUBREDDITS="wallpaper,wallpapers,DigitalArt" \
+    -v /home/user/Pictures/Backgrounds:/data \
+    ghcr.io/6ftclaud/reddit-wallpaper-scraper/rws:latest
+```

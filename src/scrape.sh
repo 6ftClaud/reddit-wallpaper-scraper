@@ -1,18 +1,18 @@
 #!/bin/bash
 # Requires sed, identify(imagemagick), jq, curl, fdupes, bc
 
-#DEBUG
-#set -x
+# DEBUG
+[[ ${DEBUG} == "true" ]] && set -x
 
-directory="/data" # Directory to download all your images to
-desired_pixel_count=4000000 # Pixel count used to determine image quality. 4 Megapixels is good for 1440p.
-desired_aspect_ratio=1.7778 # <- this is 16:9 aspect ratio
-current_directory=$(pwd)
-cd $directory
+# Pixel count used to determine image quality. 4 Megapixels is good for 1440p.
+[ -z ${PIXEL_COUNT} ] && PIXEL_COUNT=4000000
 
-# Scrape reddit from .txt file with list of subreddits
-subreddit_file="/tmp/subreddits.txt"
-for sub in $(cat $subreddit_file);do
+# <- this is 16:9 aspect ratio
+[ -z ${ASPECT_RATIO} ] && ASPECT_RATIO=1.7778 
+
+# Iterate over subreddits defined in the environment variable
+for sub in ${SUBREDDITS//,/ }
+do
     if ! [ -d $sub ];then
         mkdir $sub
     fi
@@ -30,7 +30,6 @@ done
 # Remove duplicates
 echo -e "\nRemoving duplicate files\n"
 fdupes -Ndqr . &> /dev/null
-# For whatever reason \d doesn't work for regex digit match
 for file in $(find . -type f -regex '.*\.[0123456789]');do mv $file ${file/.[0123456789]};done
 
 # Remove garbage
@@ -50,22 +49,20 @@ for file in $(find . -type f -not -name "*.sh" -not -name "*.txt");do
         h=$(echo $pixels | awk -F 'x' '{print $2}')
     done
 
-    pixelcount=$((w * h))
-    aspect_ratio=$(echo "$w/$h" | bc -l)
+    pc=$((w * h))
+    ar=$(echo "$w/$h" | bc -l)
     
     # Desired aspect ratio (16:9 is ~1.7778)
-    if [[ $(echo "$aspect_ratio>($desired_aspect_ratio-0.05)" | bc) -eq 1 && $(echo "$aspect_ratio<($desired_aspect_ratio+0.05)" | bc) -eq 1 ]];then
+    if [[ $(echo "$ar>(${ASPECT_RATIO}-0.05)" | bc) -eq 1 && $(echo "$ar<(${ASPECT_RATIO}+0.05)" | bc) -eq 1 ]];then
         :
     else
-        echo "$file aspect ratio is  incorrect: $aspect_ratio"
+        echo "$file aspect ratio is  incorrect: $ar"
         rm $file;exit
     fi
     # Desired pixel amount
-    if [[ $pixelcount -lt $desired_pixel_count ]];then
-        echo "$file pixel count is less than $desired_pixel_count : $pixelcount"
+    if [[ $pc -lt ${PIXEL_COUNT} ]];then
+        echo "$file pixel count is less than ${PIXEL_COUNT} : $pc"
         rm $file
     fi
     )
 done
-
-cd $current_directory

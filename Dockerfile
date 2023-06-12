@@ -1,20 +1,25 @@
 FROM alpine:latest
 
+# Download necessary packages
 RUN apk update \
     && apk upgrade \
     && apk add sed imagemagick jq curl wget fdupes bc bash file
 
-RUN adduser -D -u 1000 -s /bin/bash scraper
+# Add docker user
+RUN adduser -D -u 1000 -s /bin/bash docker
 
-COPY src/* /tmp/
+# Copy source code
+COPY --chown=docker:docker src/* /srv/
+# Set permissions
+RUN chmod +x /srv/*.sh && chown docker:docker /srv/*.sh
 
-RUN mkdir /data
+# Create Volume
+RUN mkdir /data && chown -R docker:docker /data
+VOLUME /data
 
-RUN chmod +x /tmp/*.sh \
-    && chown scraper:scraper /tmp/*.sh \
-    && chown -R scraper:scraper /data
-
-USER scraper:scraper
+# Set user and working directory
+USER docker
 WORKDIR /data
-ENTRYPOINT /tmp/scrape.sh
-LABEL system.prune='do_not_delete'
+
+# Set entrypoint
+ENTRYPOINT /srv/scrape.sh

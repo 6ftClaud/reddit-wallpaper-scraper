@@ -1,0 +1,38 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: ghcr.io/6ftclaud/reddit-wallpaper-scraper/rws
+
+jobs:
+
+  docker_image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set tag based on current date
+        id: set_tag
+        run: echo "docker_tag=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        run: |
+          docker buildx build \
+            --cache-from $IMAGE_NAME:latest \
+            -t $IMAGE_NAME:${{steps.set_tag.outputs.docker_tag}} \
+            -t $IMAGE_NAME:latest \
+            --push \
+            .
