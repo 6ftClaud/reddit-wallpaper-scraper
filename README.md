@@ -13,6 +13,7 @@ This script finds out the image urls from the reddit json data, downloads the im
 |ASPECT_RATIO|Desired aspect ratio|Defaults to `1.7778` (16:9)|
 ### Run it
 #### docker run
+Running it once  
 ```bash
 docker run --rm -it \
     -e SUBREDDITS="wallpaper,wallpapers,DigitalArt" \
@@ -20,6 +21,7 @@ docker run --rm -it \
     ghcr.io/6ftclaud/reddit-wallpaper-scraper/rws:latest
 ```
 #### docker-compose
+Running it as a daemon service  
 ```yaml
 version: "3.7"
 
